@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <title>Generated Documentation</title> -->
+  <style>
+   <%- fs.readFileSync(path.join(modulePath, 'assets', 'css', 'hljs-lightfair.css'), 'utf8'); %>
+   <%- fs.readFileSync(path.join(modulePath, 'assets', 'css', 'reset.css'), 'utf8'); %>
+   <%- fs.readFileSync(path.join(modulePath, 'assets', 'css', 'bootstrap.min.css'), 'utf8'); %>
+   <%- fs.readFileSync(path.join(modulePath, 'assets', 'css', 'bootstrap-theme.min.css'), 'utf8'); %>
+   <%- fs.readFileSync(path.join(modulePath, 'assets', 'css', 'style.css'), 'utf8'); %>
+  </style>
+</head>
+
+<body>
+    <div id="nav">
+        <%
+        function renderNav(node) {
+        %>
+            <ul>
+                <% node.children.forEach(function (member) { %>
+                    <li class="nav-1"><a href="#<%= member.info.name %>">
+                        <%= renderKeyword(member) %> <%= member.info.name %></a></li>
+                    <% if (member.children.length > 0) { %>
+                        <ul>
+                            <% member.children.forEach(function (child) {
+                                if (!["IdnRef", "Specification"].includes(child.nodeType)) { %>
+                                <li class="nav-2"><a href="#<%= child.info.name %>"><%= child.info.name %></a></li>
+                            <% }
+                            }); %>
+                        </ul>
+                    <% } %>
+                <% }); %>
+            </ul>
+
+        <%
+        }
+        renderNav(data);
+        %>
+    </div>
+
+
+
+    <div id="content">
+
+        <%
+        function renderCode(node) {
+            let highlightedSource = highlightSource(sourcePath, node.pos);
+        %>
+        <details>
+            <summary class="btn btn-info">Source</summary>
+            <div class="code-grid">
+                <div class ="code-layer"><code><pre><%- highlightedSource %></pre></code></div>
+                <div class ="link-layer"><code><pre class="link-layer"></pre></code></div>
+            </div>
+        </details>
+        <%
+        }
+
+        function renderFieldDecl(node) {
+        %>
+            <article id="<%= node.info.name %>">
+                <h2>field <%= node.info.name %>:
+                    <span class="hljs-type"><%= node.info.typ %></span></h2>
+                <section class="doc">
+                    <% if (node.doc) { %>
+                        <%- marked.parse(node.doc) %>
+                    <% } %>
+                </section>
+            </article>
+        <%
+        }
+
+        function renderFunction(node) {
+        %>
+        <article id="<%= node.info.name %>">
+            <h2>function <%= node.info.name %>
+            <span class="arguments">
+                (<% node.info.args.forEach(function (arg) { %>
+                    <%= arg.name %>: <span class="hljs-type"><%= arg.typ %></span>
+                    <% }); %>)
+            </span>: <span class="hljs-type"><%= node.info.typ %></span></h2>
+            <section class="doc">
+                <% if (node.doc) { %>
+                    <%- marked.parse(node.doc) %>
+                <% } %>
+            </section>
+                <%= renderCode(node) %>
+                <% node.children.forEach(renderNode); %>
+        </article>
+        <%
+        }
+
+        function renderSpecification(node) {
+        %>
+        <% if (node.info.name !== "invariant") {  %>
+            <article id="<%= node.info.name %>">
+                <h3><%= node.info.name %></h3>
+                <section class="doc">
+                    <% if (node.doc) { %>
+                        <%- marked.parse(node.doc) %>
+                    <% } %>
+                </section>
+            </article>
+        <% } %>
+        <%
+        }
+
+        function renderPredicate(node) {
+        %>
+        <article id="<%= node.info.name %>">
+            <h2>predicate <%= node.info.name %>
+                <span class="arguments">
+                    (<% node.info.args.forEach(function (arg) { %>
+                    <%= arg.name %>: <span class="hljs-type"><%= arg.typ %></span>
+                    <% }); %>)
+                </span>
+            </h2>
+            <section class="doc">
+                <% if (node.doc) { %>
+                    <%- marked.parse(node.doc) %>
+                <% } %>
+            </section>
+            <details>
+                <summary class="btn btn-info">Source</summary>
+                <code><pre><%- highlightSource(sourcePath, node.pos) %></pre></code>
+            </details>
+            </article>
+        <%
+        }
+
+        function renderDomain(node) {
+        %>
+        <article id="<%= node.info.name %>">
+            <h2><%= node.info.name %></h2>
+            <section class="doc">
+                <% if (node.doc) { %>
+                    <%- marked.parse(node.doc) %>
+                <% } %>
+            </section>
+            <details>
+                <summary class="btn btn-info">Source</summary>
+                <code><pre><%- highlightSource(sourcePath, node.pos) %></pre></code>
+            </details>
+            <% node.children.forEach(renderNode); %>
+        </article>
+        <%
+        }
+
+        function renderAxiom(node) {
+        %>
+        <article id="<%= node.info.name %>">
+            <h3>Axiom</h3>
+            <section class="doc">
+                <% if (node.doc) { %>
+                    <%- marked.parse(node.doc) %>
+                <% } %>
+            </section>
+            <details>
+                <summary class="btn btn-info">Source</summary>
+                <code><pre><%- highlightSource(sourcePath, node.pos) %></pre></code>
+            </details>
+        </article>
+        <%
+        }
+
+        function renderDomainFunction(node) {
+        %>
+        <article id="<%= node.info.name %>">
+            
+                <h3><%= node.info.name %>
+                <span class="arguments">
+                    (<% if (node.info.args) { %>
+                    <% node.info.args.forEach(function (arg) { %>
+                        <%= arg.name %>: <span class="hljs-type"><%= arg.typ %></span>
+                    <% }); %>
+                    <% } %>)
+                </span>: <span class="hljs-type"><%= node.info.typ %></span></h3>
+                <section class="doc">
+                    <% if (node.doc) { %>
+                        <%- marked.parse(node.doc) %>
+                    <% } %>
+                </section>
+                <details>
+                    <summary class="btn btn-info">Source</summary>
+                    <code><pre><%- highlightSource(sourcePath, node.pos) %></pre></code>
+                </details>
+            </article>
+        <%
+        }
+
+        function renderMethod(node) {
+        %>
+        <article id="<%= node.info.name %>">
+            <h2>method <%= node.info.name %>
+                <span class="arguments">
+                    (<% if (node.info.args) { %>
+                        <% node.info.args.forEach(function (arg) { %>
+                        <%= arg.name %>: <span class="hljs-type"><%= arg.typ %></span>
+                        <% }); %>
+                    <% } %>)
+                </span>
+            </h2>
+            <section class="doc">
+                <% if (node.doc) { %>
+                    <%- marked.parse(node.doc) %>
+                <% } %>
+            </section>
+            <details>
+                <summary class="btn btn-info">Source</summary>
+                <div class="code-grid">
+                    <div  class ="code-layer"><code><pre><%- highlightSource(sourcePath, node.pos) %></pre></code></div>
+                </div>
+            </details>
+                <% node.children.forEach(renderNode); %>
+            </article>
+        <%
+        }
+
+        function renderNode(node) {
+
+            switch (node.nodeType) {
+                case "FieldDecl":
+                    renderFieldDecl(node);
+                    break;
+                case "Method":
+                    renderMethod(node);
+                    break;
+                case "Function":
+                    renderFunction(node);
+                    break;
+                case "Specification":
+                    renderSpecification(node);
+                    break;
+                case "Predicate":
+                    renderPredicate(node);
+                    break;
+                case "Domain":
+                    renderDomain(node);
+                    break;
+                case "Axiom":
+                    renderAxiom(node);
+                    break;
+                case "DomainFunction":
+                    renderDomainFunction(node);
+                    break;
+                case "*root*":
+                    node.children.forEach(renderNode);
+                    break;
+                case "PIdnRef":
+                    break;
+            }
+        }
+
+        function renderKeyword(node) {
+            switch (node.nodeType) {
+                case "FieldDecl":
+                    return "field";
+                    break;
+                case "Method":
+                    return "method";
+                    break;
+                case "Function":
+                    return "function";
+                    break;
+                case "Specification":
+                    return node.info.name;
+                    break;
+                case "Predicate":
+                    return "predicate";
+                    break;
+                case "Domain":
+                    return "domain";
+                    break;
+                case "Axiom":
+                    return "axiom";
+                    break;
+                case "DomainFunction":
+                    if (node.info.misc) {
+                        return node.info.misc + " function";
+                    } else {
+                        return "function";
+                    }
+                    break;
+                case "*root*":
+                    node.children.forEach(renderNode);
+                    break;
+                case "PIdnRef":
+                    break;
+            }
+        }
+
+        renderNode(data);
+        %>
+
+    </div>
+</body>
+</html>
