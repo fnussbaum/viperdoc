@@ -47,13 +47,14 @@
 
         <%
         function renderCode(node) {
-            let highlightedSource = highlightSource(sourcePath, node.pos);
+            let highlightedSource = highlightSource(source, node.pos);
+            let linkLayer = createLinkLayer(linksSource, node.pos);
         %>
         <details>
             <summary class="btn btn-info">Source</summary>
             <div class="code-grid">
                 <div class ="code-layer"><code><pre><%- highlightedSource %></pre></code></div>
-                <div class ="link-layer"><code><pre class="link-layer"></pre></code></div>
+                <div class ="link-layer"><code><pre class="link-layer"><%- linkLayer %></pre></code></div>
             </div>
         </details>
         <%
@@ -123,10 +124,7 @@
                     <%- marked.parse(node.doc) %>
                 <% } %>
             </section>
-            <details>
-                <summary class="btn btn-info">Source</summary>
-                <code><pre><%- highlightSource(sourcePath, node.pos) %></pre></code>
-            </details>
+            <%= renderCode(node) %>
             </article>
         <%
         }
@@ -140,10 +138,7 @@
                     <%- marked.parse(node.doc) %>
                 <% } %>
             </section>
-            <details>
-                <summary class="btn btn-info">Source</summary>
-                <code><pre><%- highlightSource(sourcePath, node.pos) %></pre></code>
-            </details>
+            <%= renderCode(node) %>
             <% node.children.forEach(renderNode); %>
         </article>
         <%
@@ -152,16 +147,13 @@
         function renderAxiom(node) {
         %>
         <article id="<%= node.info.name %>">
-            <h3>Axiom</h3>
+            <h3>axiom</h3>
             <section class="doc">
                 <% if (node.doc) { %>
                     <%- marked.parse(node.doc) %>
                 <% } %>
             </section>
-            <details>
-                <summary class="btn btn-info">Source</summary>
-                <code><pre><%- highlightSource(sourcePath, node.pos) %></pre></code>
-            </details>
+            <%= renderCode(node) %>
         </article>
         <%
         }
@@ -170,7 +162,7 @@
         %>
         <article id="<%= node.info.name %>">
             
-                <h3><%= node.info.name %>
+                <h3>function <%= node.info.name %>
                 <span class="arguments">
                     (<% if (node.info.args) { %>
                     <% node.info.args.forEach(function (arg) { %>
@@ -183,10 +175,6 @@
                         <%- marked.parse(node.doc) %>
                     <% } %>
                 </section>
-                <details>
-                    <summary class="btn btn-info">Source</summary>
-                    <code><pre><%- highlightSource(sourcePath, node.pos) %></pre></code>
-                </details>
             </article>
         <%
         }
@@ -208,13 +196,8 @@
                     <%- marked.parse(node.doc) %>
                 <% } %>
             </section>
-            <details>
-                <summary class="btn btn-info">Source</summary>
-                <div class="code-grid">
-                    <div  class ="code-layer"><code><pre><%- highlightSource(sourcePath, node.pos) %></pre></code></div>
-                </div>
-            </details>
-                <% node.children.forEach(renderNode); %>
+            <%= renderCode(node) %>
+            <% node.children.forEach(renderNode); %>
             </article>
         <%
         }
