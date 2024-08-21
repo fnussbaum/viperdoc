@@ -100,7 +100,7 @@ async function generateWebsite(sourcePath, jsonData, modulePath = __dirname) {
   const html = ejs.render(template, { data, marked, hljs, path, fs,
                                       highlightSource, filename, source, linksSource, createLinkLayer, modulePath });
 
-  console.log(insertLinksSource(path.basename(sourcePath), source, data));
+  // console.log(insertLinksSource(path.basename(sourcePath), source, data));
   await fs.writeFile(path.join(path.dirname(sourcePath), "output.html"), html);
 }
 
